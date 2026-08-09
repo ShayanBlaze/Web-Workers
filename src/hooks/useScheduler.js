@@ -37,7 +37,7 @@ export function useScheduler() {
       status: "idle",
       taskId: null,
       progress: 0,
-    })),
+    }))
   );
 
   const [runningTasks, setRunningTasks] = useState({});
@@ -71,8 +71,8 @@ export function useScheduler() {
     setLogs((prev) =>
       [`[${new Date().toLocaleTimeString("fa-IR")}] ${message}`, ...prev].slice(
         0,
-        50,
-      ),
+        50
+      )
     );
   };
 
@@ -81,7 +81,7 @@ export function useScheduler() {
 
     if (type === "PROGRESS") {
       setCores((prev) =>
-        prev.map((c) => (c.id === coreId ? { ...c, progress: progress } : c)),
+        prev.map((c) => (c.id === coreId ? { ...c, progress } : c))
       );
       return;
     }
@@ -91,6 +91,13 @@ export function useScheduler() {
       const runningTask = runningTasksRef.current[coreId];
 
       if (runningTask) {
+        const sliceStartTime = runningTask.lastStartTime ?? runningTask.firstRunTime ?? completionTime;
+        const newExecution = {
+          coreId: coreId - 1, // تبدیل شناسه هسته به 0-indexed
+          startTime: Math.round(sliceStartTime),
+          endTime: Math.round(completionTime),
+        };
+
         const completedTask = {
           ...runningTask,
           status: "completed",
@@ -98,18 +105,19 @@ export function useScheduler() {
           burstTime: executionTime * 1000,
           result,
           executionTime,
+          executions: [...(runningTask.executions || []), newExecution],
         };
 
         setCompletedTasks((prev) => [...prev, completedTask]);
 
         if (benchmarkModeRef.current) {
           setBenchmarkTasks((prev) =>
-            prev.map((t) => (t.id === completedTask.id ? completedTask : t)),
+            prev.map((t) => (t.id === completedTask.id ? completedTask : t))
           );
         }
 
         addLog(
-          `تسک ${taskId} روی Core ${coreId} تکمیل شد. ${result} عدد اول در ${executionTime} ثانیه پیدا شد.`,
+          `تسک ${taskId} روی Core ${coreId} تکمیل شد. ${result} عدد اول در ${executionTime} ثانیه پیدا شد.`
         );
       }
 
@@ -123,8 +131,8 @@ export function useScheduler() {
         prev.map((c) =>
           c.id === coreId
             ? { ...c, status: "idle", taskId: null, progress: 0 }
-            : c,
-        ),
+            : c
+        )
       );
 
       return;
@@ -143,23 +151,30 @@ export function useScheduler() {
         prev.map((c) =>
           c.id === coreId
             ? { ...c, status: "idle", taskId: null, progress: 0 }
-            : c,
-        ),
+            : c
+        )
       );
 
       if (cancelledTask) {
+        const endTime = getRelativeTime();
+        const sliceStartTime = cancelledTask.lastStartTime ?? cancelledTask.firstRunTime ?? endTime;
+        const newExecution = {
+          coreId: coreId - 1,
+          startTime: Math.round(sliceStartTime),
+          endTime: Math.round(endTime),
+        };
+
         const taskWithState = {
           ...cancelledTask,
           resumeState: resumeState || cancelledTask.resumeState,
+          executions: [...(cancelledTask.executions || []), newExecution],
         };
 
         setQueue((prev) => {
           const filteredQueue = prev.filter((t) => t.id !== cancelledTask.id);
-
           if (filteredQueue.some((t) => t.id === taskWithState.id)) {
             return filteredQueue;
           }
-
           const updatedQueue = [taskWithState, ...filteredQueue];
           if (algorithmRef.current === "PRIORITY") {
             return updatedQueue.sort((a, b) => b.priority - a.priority);
@@ -168,7 +183,7 @@ export function useScheduler() {
         });
 
         addLog(
-          `تسک ${taskId} روی Core ${coreId} به دلیل وقفه (preempted) به صف بازگردانده شد.`,
+          `تسک ${taskId} روی Core ${coreId} به دلیل وقفه (preempted) به صف بازگردانده شد.`
         );
       } else {
         addLog(`تسک ${taskId} روی Core ${coreId} لغو شد.`);
@@ -189,24 +204,35 @@ export function useScheduler() {
         prev.map((c) =>
           c.id === coreId
             ? { ...c, status: "idle", taskId: null, progress: 0 }
-            : c,
-        ),
+            : c
+        )
       );
 
       if (pausedTask) {
-        const taskWithState = { ...pausedTask, resumeState };
+        const endTime = getRelativeTime();
+        const sliceStartTime = pausedTask.lastStartTime ?? pausedTask.firstRunTime ?? endTime;
+        const newExecution = {
+          coreId: coreId - 1,
+          startTime: Math.round(sliceStartTime),
+          endTime: Math.round(endTime),
+        };
+
+        const taskWithState = {
+          ...pausedTask,
+          resumeState,
+          executions: [...(pausedTask.executions || []), newExecution],
+        };
+
         setQueue((prev) => {
           const filteredQueue = prev.filter((t) => t.id !== pausedTask.id);
-
           if (filteredQueue.some((t) => t.id === taskWithState.id)) {
             return filteredQueue;
           }
-
           return [...filteredQueue, taskWithState];
         });
 
         addLog(
-          `تسک ${taskId} روی Core ${coreId} به دلیل اتمام کوانتوم زمانی متوقف و به انتهای صف منتقل شد.`,
+          `تسک ${taskId} روی Core ${coreId} به دلیل اتمام کوانتوم زمانی متوقف و به انتهای صف منتقل شد.`
         );
       }
       return;
@@ -268,20 +294,21 @@ export function useScheduler() {
       firstRunTime: null,
       completionTime: null,
       burstTime: 0,
+      executions: [],
     };
 
     setQueue((prevQueue) => {
       const activeScheduler = schedulers[algorithmRef.current];
       const preemptions = activeScheduler.findPreemptions(
         newTask,
-        runningTasksRef.current,
+        runningTasksRef.current
       );
 
       preemptions.forEach(({ coreId, task }) => {
         if (workerPool.current[coreId]) {
           workerPool.current[coreId].postMessage({ type: "CANCEL" });
           addLog(
-            `وقفه (Preemption): تسک ${task.id} روی Core ${coreId} برای تسک با اولویت بالاتر ${newTask.id} متوقف شد.`,
+            `وقفه (Preemption): تسک ${task.id} روی Core ${coreId} برای تسک با اولویت بالاتر ${newTask.id} متوقف شد.`
           );
         }
       });
@@ -290,7 +317,7 @@ export function useScheduler() {
     });
 
     addLog(
-      `تسک ${newTask.id} به صف آماده اضافه شد (Priority: ${priorityVal}, Complexity: ${complexity}x).`,
+      `تسک ${newTask.id} به صف آماده اضافه شد (Priority: ${priorityVal}, Complexity: ${complexity}x).`
     );
   }, []);
 
@@ -301,7 +328,7 @@ export function useScheduler() {
     const activeScheduler = schedulers[algorithmRef.current];
     const { tasksToDispatch } = activeScheduler.schedule(
       queue,
-      idleCores.length,
+      idleCores.length
     );
 
     if (tasksToDispatch.length === 0) return;
@@ -311,10 +338,13 @@ export function useScheduler() {
     tasksToDispatch.forEach((task, index) => {
       const core = idleCores[index];
       if (core) {
-        const taskToRun =
-          task.firstRunTime === null
-            ? { ...task, firstRunTime: getRelativeTime() }
-            : task;
+        const currentTime = getRelativeTime();
+        const taskToRun = {
+          ...task,
+          firstRunTime: task.firstRunTime === null ? currentTime : task.firstRunTime,
+          lastStartTime: currentTime,
+          executions: task.executions || [],
+        };
 
         workerPool.current[core.id].postMessage({
           taskId: taskToRun.id,
@@ -335,8 +365,8 @@ export function useScheduler() {
                   taskId: taskToRun.id,
                   progress: 0,
                 }
-              : c,
-          ),
+              : c
+          )
         );
 
         setRunningTasks((prev) => ({
@@ -346,7 +376,7 @@ export function useScheduler() {
 
         dispatchedTaskIds.add(taskToRun.id);
         addLog(
-          `زمان‌بند (Dispatcher) تسک ${taskToRun.id} را به Core ${core.id} اختصاص داد.`,
+          `زمان‌بند (Dispatcher) تسک ${taskToRun.id} را به Core ${core.id} اختصاص داد.`
         );
       }
     });
@@ -357,7 +387,7 @@ export function useScheduler() {
   const startBenchmark = useCallback((tasksConfig) => {
     setQueue([]);
     setCores((prev) =>
-      prev.map((c) => ({ ...c, status: "idle", taskId: null, progress: 0 })),
+      prev.map((c) => ({ ...c, status: "idle", taskId: null, progress: 0 }))
     );
     setRunningTasks({});
     setCompletedTasks([]);
@@ -374,6 +404,7 @@ export function useScheduler() {
       firstRunTime: null,
       completionTime: null,
       burstTime: 0,
+      executions: [],
     }));
 
     setBenchmarkTasks(tasks);

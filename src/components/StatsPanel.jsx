@@ -1,17 +1,43 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   calculateTaskMetrics,
   calculateAverageMetrics,
 } from "../utils/metrics";
 import { formatTime } from "../utils/formatTime";
+import GanttChart from "./GanttChart";
 
 export default function StatsPanel({ tasks, coreCount, onClose }) {
   const { t } = useTranslation();
   const averages = calculateAverageMetrics(tasks, coreCount);
 
+  // استخراج داده‌های timeline به صورت خودکار برای همه الگوریتم‌ها
+  const timelineData = useMemo(() => {
+    const slices = [];
+    tasks.forEach((task) => {
+      if (task.executions && task.executions.length > 0) {
+        task.executions.forEach((exec) => {
+          slices.push({
+            taskId: task.id,
+            coreId: exec.coreId,
+            startTime: exec.startTime,
+            endTime: exec.endTime,
+          });
+        });
+      } else if (task.firstRunTime !== null && task.completionTime !== null) {
+        slices.push({
+          taskId: task.id,
+          coreId: 0,
+          startTime: task.firstRunTime,
+          endTime: task.completionTime,
+        });
+      }
+    });
+    return slices;
+  }, [tasks]);
+
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4 animate-[fadeIn_0.15s_ease-out]">
       <div className="bg-gray-900 rounded-2xl shadow-2xl max-w-6xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col border border-gray-800">
         {/* Header */}
         <div className="bg-gradient-to-r rtl:bg-gradient-to-l from-indigo-600 to-purple-600 p-4 sm:p-6">
@@ -105,91 +131,96 @@ export default function StatsPanel({ tasks, coreCount, onClose }) {
           </div>
         </div>
 
-        {/* Task Details Table */}
-        <div className="flex-1 overflow-auto p-3 sm:p-6">
-          <h3 className="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4 flex items-center gap-2">
-            <span className="w-1 h-4 sm:h-5 bg-indigo-500 rounded"></span>
-            {t("stats.taskDetails")}
-          </h3>
+        {/* بخش Gantt Chart به همراه scrollable container اصلی */}
+        <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-6 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-700 [&::-webkit-scrollbar-thumb]:rounded-full">
+          <GanttChart timeline={timelineData} coreCount={coreCount} />
 
-          <div className="overflow-x-auto -mx-3 sm:mx-0">
-            <div className="inline-block min-w-full align-middle px-3 sm:px-0">
-              <table className="min-w-full text-xs sm:text-sm">
-                <thead>
-                  <tr className="border-b border-gray-700 whitespace-nowrap">
-                    <th className="text-start p-2 sm:p-3 text-gray-400 font-medium">
-                      {t("stats.table.taskId")}
-                    </th>
-                    <th className="text-center p-2 sm:p-3 text-gray-400 font-medium">
-                      {t("stats.table.priority")}
-                    </th>
-                    <th className="text-center p-2 sm:p-3 text-gray-400 font-medium hidden sm:table-cell">
-                      {t("stats.table.arrival")}
-                    </th>
-                    <th className="text-center p-2 sm:p-3 text-gray-400 font-medium hidden md:table-cell">
-                      {t("stats.table.firstRun")}
-                    </th>
-                    <th className="text-center p-2 sm:p-3 text-gray-400 font-medium hidden lg:table-cell">
-                      {t("stats.table.completion")}
-                    </th>
-                    <th className="text-center p-2 sm:p-3 text-gray-400 font-medium">
-                      {t("stats.table.tat")}
-                    </th>
-                    <th className="text-center p-2 sm:p-3 text-gray-400 font-medium">
-                      {t("stats.table.wt")}
-                    </th>
-                    <th className="text-center p-2 sm:p-3 text-gray-400 font-medium">
-                      {t("stats.table.rt")}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {tasks.map((task) => {
-                    const metrics = calculateTaskMetrics(task);
-                    return (
-                      <tr
-                        key={task.id}
-                        className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors whitespace-nowrap"
-                      >
-                        <td className="p-2 sm:p-3 text-white font-mono text-xs sm:text-sm">
-                          #{task.id}
-                        </td>
-                        <td className="p-2 sm:p-3 text-center">
-                          <span className="inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-indigo-600/20 text-indigo-400 font-semibold text-[10px] sm:text-xs">
-                            {task.priority}
-                          </span>
-                        </td>
-                        <td className="p-2 sm:p-3 text-center text-[10px] sm:text-xs text-gray-400 font-mono hidden sm:table-cell">
-                          {formatTime(task.arrivalTime) || "—"}
-                        </td>
-                        <td className="p-2 sm:p-3 text-center text-[10px] sm:text-xs text-gray-400 font-mono hidden md:table-cell">
-                          {formatTime(task.firstRunTime) || "—"}
-                        </td>
-                        <td className="p-2 sm:p-3 text-center text-[10px] sm:text-xs text-gray-400 font-mono hidden lg:table-cell">
-                          {formatTime(task.completionTime) || "—"}
-                        </td>
-                        <td className="p-2 sm:p-3 text-center">
-                          <span className="inline-block px-1.5 py-0.5 sm:px-2 sm:py-1 rounded bg-indigo-500/20 text-indigo-300 font-semibold text-[10px] sm:text-xs">
-                            {metrics ? `${metrics.turnaroundTime}` : "—"}
-                          </span>
-                        </td>
-                        <td className="p-2 sm:p-3 text-center">
-                          <span className="inline-block px-1.5 py-0.5 sm:px-2 sm:py-1 rounded bg-purple-500/20 text-purple-300 font-semibold text-[10px] sm:text-xs">
-                            {metrics ? `${metrics.waitingTime}` : "—"}
-                          </span>
-                        </td>
-                        <td className="p-2 sm:p-3 text-center">
-                          <span className="inline-block px-1.5 py-0.5 sm:px-2 sm:py-1 rounded bg-pink-500/20 text-pink-300 font-semibold text-[10px] sm:text-xs">
-                            {metrics && metrics.responseTime !== null
-                              ? `${metrics.responseTime}`
-                              : "—"}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+          {/* Task Details Table */}
+          <div>
+            <h3 className="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4 flex items-center gap-2">
+              <span className="w-1 h-4 sm:h-5 bg-indigo-500 rounded"></span>
+              {t("stats.taskDetails")}
+            </h3>
+
+            <div className="overflow-x-auto -mx-3 sm:mx-0">
+              <div className="inline-block min-w-full align-middle px-3 sm:px-0">
+                <table className="min-w-full text-xs sm:text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-700 whitespace-nowrap">
+                      <th className="text-start p-2 sm:p-3 text-gray-400 font-medium">
+                        {t("stats.table.taskId")}
+                      </th>
+                      <th className="text-center p-2 sm:p-3 text-gray-400 font-medium">
+                        {t("stats.table.priority")}
+                      </th>
+                      <th className="text-center p-2 sm:p-3 text-gray-400 font-medium hidden sm:table-cell">
+                        {t("stats.table.arrival")}
+                      </th>
+                      <th className="text-center p-2 sm:p-3 text-gray-400 font-medium hidden md:table-cell">
+                        {t("stats.table.firstRun")}
+                      </th>
+                      <th className="text-center p-2 sm:p-3 text-gray-400 font-medium hidden lg:table-cell">
+                        {t("stats.table.completion")}
+                      </th>
+                      <th className="text-center p-2 sm:p-3 text-gray-400 font-medium">
+                        {t("stats.table.tat")}
+                      </th>
+                      <th className="text-center p-2 sm:p-3 text-gray-400 font-medium">
+                        {t("stats.table.wt")}
+                      </th>
+                      <th className="text-center p-2 sm:p-3 text-gray-400 font-medium">
+                        {t("stats.table.rt")}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tasks.map((task) => {
+                      const metrics = calculateTaskMetrics(task);
+                      return (
+                        <tr
+                          key={task.id}
+                          className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors whitespace-nowrap"
+                        >
+                          <td className="p-2 sm:p-3 text-white font-mono text-xs sm:text-sm">
+                            #{task.id}
+                          </td>
+                          <td className="p-2 sm:p-3 text-center">
+                            <span className="inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-indigo-600/20 text-indigo-400 font-semibold text-[10px] sm:text-xs">
+                              {task.priority}
+                            </span>
+                          </td>
+                          <td className="p-2 sm:p-3 text-center text-[10px] sm:text-xs text-gray-400 font-mono hidden sm:table-cell">
+                            {formatTime(task.arrivalTime) || "—"}
+                          </td>
+                          <td className="p-2 sm:p-3 text-center text-[10px] sm:text-xs text-gray-400 font-mono hidden md:table-cell">
+                            {formatTime(task.firstRunTime) || "—"}
+                          </td>
+                          <td className="p-2 sm:p-3 text-center text-[10px] sm:text-xs text-gray-400 font-mono hidden lg:table-cell">
+                            {formatTime(task.completionTime) || "—"}
+                          </td>
+                          <td className="p-2 sm:p-3 text-center">
+                            <span className="inline-block px-1.5 py-0.5 sm:px-2 sm:py-1 rounded bg-indigo-500/20 text-indigo-300 font-semibold text-[10px] sm:text-xs">
+                              {metrics ? `${metrics.turnaroundTime}` : "—"}
+                            </span>
+                          </td>
+                          <td className="p-2 sm:p-3 text-center">
+                            <span className="inline-block px-1.5 py-0.5 sm:px-2 sm:py-1 rounded bg-purple-500/20 text-purple-300 font-semibold text-[10px] sm:text-xs">
+                              {metrics ? `${metrics.waitingTime}` : "—"}
+                            </span>
+                          </td>
+                          <td className="p-2 sm:p-3 text-center">
+                            <span className="inline-block px-1.5 py-0.5 sm:px-2 sm:py-1 rounded bg-pink-500/20 text-pink-300 font-semibold text-[10px] sm:text-xs">
+                              {metrics && metrics.responseTime !== null
+                                ? `${metrics.responseTime}`
+                                : "—"}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
