@@ -2,13 +2,16 @@
 
 [![React](https://img.shields.io/badge/React-19.2.x-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4.3.x-38BDF8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![i18next](https://img.shields.io/badge/i18next-Internationalization-26A69A?logo=i18next&logoColor=white)](https://www.i18next.com/)
 [![Web Workers API](https://img.shields.io/badge/Web_Workers-Multithreading-FF6F00?logo=javascript&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)
 [![Vite](https://img.shields.io/badge/Vite-8.1.x-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-A high-performance, interactive, multi-threaded Operating System CPU Scheduler and Benchmark Simulator built with **React**, **Tailwind CSS**, and **Web Workers**. 
+A high-performance, interactive, multi-threaded Operating System CPU Scheduler and Benchmark Simulator built with **React**, **Tailwind CSS**, **i18next**, and **Web Workers**. 
 
 This application simulates how modern operating system kernels manage CPU time across single or multi-core architectures. By leveraging the browser's native **Web Worker API**, compute-heavy process simulations (CPU-bound prime-number computations) run in parallel on isolated background threads without blocking the main UI thread.
+
+**Fully responsive** and optimized for desktop, tablet, and mobile devices with **bilingual support** (English/Persian) and automatic RTL/LTR layout adaptation.
 
 ---
 
@@ -25,7 +28,9 @@ This application simulates how modern operating system kernels manage CPU time a
 * **📊 Benchmark Mode & Performance Analytics**:
   * Runs batch workload tests across custom task counts and complexities.
   * Calculates core OS metrics: **Turnaround Time (TAT)**, **Waiting Time (WT)**, **Response Time (RT)**, **CPU Utilization (%)**, and **System Throughput (tasks/sec)**.
-* **🎨 Modern Responsive UI**: Glassmorphism design with real-time per-core progress monitors, interactive queue inspections, and live system log streams.
+* **🌐 Internationalization (i18n)**: Full bilingual support (English/Persian) with automatic RTL/LTR layout switching, browser language detection, and persistent language preferences using `i18next`.
+* **📱 Fully Responsive Design**: Mobile-first adaptive interface with touch-optimized controls, bottom navigation tabs for ergonomic thumb reach, and seamless scaling from smartphones to ultrawide displays.
+* **🎨 Modern UI/UX**: Glassmorphism design with real-time per-core progress monitors, interactive queue inspections, live system log streams, and adaptive dark theme.
 
 ---
 
@@ -111,24 +116,94 @@ The benchmark suite evaluates scheduler performance using standard Operating Sys
 Web-Workers/
 ├── src/
 │   ├── components/
-│   │   └── StatsPanel.jsx    # Benchmark modal & metrics dashboard
+│   │   └── StatsPanel.jsx       # Benchmark modal & metrics dashboard (responsive)
 │   ├── hooks/
-│   │   └── useScheduler.js   # Custom React Hook managing worker pool & state
+│   │   └── useScheduler.js      # Custom React Hook managing worker pool & state
+│   ├── locales/
+│   │   ├── en.json              # English translations
+│   │   └── fa.json              # Persian (Farsi) translations
 │   ├── schedulers/
-│   │   ├── fifo.js           # FIFO scheduler strategy
-│   │   ├── priority.js       # Preemptive priority scheduler strategy
-│   │   └── roundRobin.js     # Round Robin scheduler strategy
+│   │   ├── fifo.js              # FIFO scheduler strategy
+│   │   ├── priority.js          # Preemptive priority scheduler strategy
+│   │   └── roundRobin.js        # Round Robin scheduler strategy
 │   ├── utils/
-│   │   ├── formatTime.js     # Time unit formatting helpers (ms / s)
-│   │   └── metrics.js        # OS performance calculation formulas
-│   ├── worker.js             # Non-blocking Web Worker prime calculator engine
-│   ├── App.jsx               # Main React dashboard component & control panel
-│   ├── main.jsx              # Application entry point
-│   └── index.css             # Tailwind CSS styles & custom scrollbars
+│   │   ├── formatTime.js        # Time unit formatting helpers (ms / s)
+│   │   └── metrics.js           # OS performance calculation formulas
+│   ├── worker.js                # Non-blocking Web Worker prime calculator engine
+│   ├── App.jsx                  # Main React dashboard (responsive with mobile tabs)
+│   ├── i18n.js                  # i18next configuration & RTL/LTR handler
+│   ├── main.jsx                 # Application entry point
+│   └── index.css                # Tailwind CSS styles & responsive utilities
 ├── index.html
 ├── package.json
-└── vite.config.js
+├── vite.config.js
+└── LICENSE
 ```
+---
+
+## 🌐 Internationalization (i18n)
+
+This application supports **bilingual operation** with seamless language switching:
+
+### Supported Languages
+
+| Language | Code | Script Direction | Completion |
+|----------|------|------------------|------------|
+| **English** | `en` | LTR | ✅ 100% |
+| **Persian (فارسی)** | `fa` | RTL | ✅ 100% |
+
+### Implementation Stack
+
+* **i18next**: Core internationalization framework
+* **react-i18next**: React bindings and hooks (`useTranslation`)
+* **i18next-browser-languagedetector**: Automatic browser language detection
+
+### Features
+
+* **Automatic Language Detection**: Detects user's browser language on first visit
+* **Dynamic RTL/LTR Switching**: Automatically adjusts layout direction and text alignment
+* **Persistent Language Preference**: Saves user's language choice in browser storage
+* **Translation Coverage**: All UI text, buttons, labels, notifications, and algorithm descriptions are fully translated
+* **Live Language Toggle**: Switch languages instantly without page reload via header button
+
+### Translation Files
+
+* **English**: `src/locales/en.json` — Complete UI translations
+* **Persian**: `src/locales/fa.json` — Complete UI translations with RTL support
+
+---
+
+## 📱 Responsive Design
+
+The interface adapts seamlessly across all device categories:
+
+### Desktop (`lg` breakpoint and above)
+* Traditional sidebar + main content layout
+* All panels visible simultaneously
+* Mouse-optimized hover states and interactions
+
+### Tablet (`md` to `lg` breakpoints)
+* Adaptive grid layouts
+* Collapsible sections
+* Touch-friendly controls (minimum 44×44px touch targets)
+
+### Mobile (below `md` breakpoint)
+* **Bottom Tab Navigation**: Fixed navigation bar at screen bottom for ergonomic thumb reach
+* **Single-Panel View**: Monitor, Controls, or Queue visible at a time
+* **Optimized Touch Targets**: All interactive elements sized for comfortable finger taps
+* **Swipe-Friendly Scrolling**: Smooth vertical scrolling with webkit custom scrollbars
+* **Pull-to-Dismiss Modals**: Sheet-style modals with drag handle indicators
+
+### Key Responsive Breakpoints
+
+```css
+sm: 640px   /* Small tablets and large phones */
+md: 768px   /* Tablets */
+lg: 1024px  /* Small laptops */
+xl: 1280px  /* Desktops */
+2xl: 1536px /* Large displays */
+```
+
 ---
 
 ## 🚀 Getting Started
@@ -149,6 +224,13 @@ Web-Workers/
    ```bash
    npm install
    ```
+   
+   This installs:
+   - React 19.2.x and React DOM
+   - Tailwind CSS 4.3.x
+   - Vite 8.1.x (build tool)
+   - i18next, react-i18next, i18next-browser-languagedetector (internationalization)
+   - ESLint and related plugins
 
 3. **Start the local development server**:
    ```bash
@@ -164,6 +246,8 @@ Web-Workers/
 
 ## 🎮 How to Use the Simulator
 
+### Desktop Instructions
+
 1. **Configure Hardware Resources**: Use the **Active CPU Cores** slider in the Control Panel to scale the active worker thread count.
 
 2. **Select Scheduling Algorithm**: Switch between **FIFO**, **Priority**, or **Round Robin**. Adjust the **Time Quantum** slider when using Round Robin.
@@ -171,6 +255,20 @@ Web-Workers/
 3. **Dispatch Manual Workloads**: Adjust task complexity ($1x - 10x$) and priority level (1 Low, 5 Medium, 10 High), then click **Dispatch Task** or **Stress Test** (Add 10 Tasks).
 
 4. **Run Benchmark Mode**: Click **🧪 Benchmark Mode** in the header, configure batch size and task complexity, and observe execution. Upon completion, the **Final Benchmark Stats** panel will display complete performance analytics.
+
+5. **Switch Language**: Click the **EN/فارسی** button in the header to toggle between English and Persian.
+
+### Mobile Instructions
+
+1. **Navigate Using Bottom Tabs**: Tap **📊 Monitor**, **⚙️ Controls**, or **📋 Queue** tabs at the bottom of the screen.
+
+2. **Control Panel (⚙️ Tab)**: Configure cores, select algorithm, set task complexity/priority, and dispatch tasks.
+
+3. **Monitor View (📊 Tab)**: Watch real-time core execution with progress bars.
+
+4. **Queue View (📋 Tab)**: Inspect waiting tasks and view system logs.
+
+5. **Change Language**: Tap the language toggle button in the header (top-right on mobile).
 
 ---
 
