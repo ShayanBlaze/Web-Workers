@@ -1,0 +1,142 @@
+{
+  "status": {
+    "idle": "Idle",
+    "processing": "Processing"
+  },
+  "priority": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High"
+  },
+  "header": {
+    "title": "Virtual OS Scheduler Simulator",
+    "subtitle": "Multi-threaded CPU simulation with Web Workers & React Hooks",
+    "activeCores": "{{active}}/{{max}} Cores Active",
+    "inQueue": "{{count}} in Queue",
+    "quantum": "Quantum: {{ms}}ms",
+    "benchmarkMode": "🧪 Benchmark Mode",
+    "benchmarkProgress": "Benchmark: {{completed}}/{{total}}",
+    "viewStats": "View Stats",
+    "exit": "Exit"
+  },
+  "controlPanel": {
+    "title": "Control Panel",
+    "activeCores": "Active CPU Cores",
+    "hardwareLimit": "Hardware Limit: {{cores}} Cores",
+    "algorithm": "Scheduling Algorithm",
+    "algoGuide": "Algorithm Conceptual Guide",
+    "algoOptions": {
+      "fifo": "FIFO (First In, First Out)",
+      "priority": "Priority Scheduling",
+      "roundRobin": "Round Robin"
+    },
+    "viewFullDetails": "View Full Details",
+    "timeQuantum": "Time Quantum",
+    "timeQuantumGuide": "Time Quantum Explanation",
+    "timeQuantumDesc": "Each task stays on a core for up to {{ms}}ms, then moves to the end of the queue if incomplete.",
+    "taskComplexity": "Task Complexity (calculate x*2M primes)",
+    "complexityMultiplier": "Multiplier: {{value}}x",
+    "taskPriority": "Task Priority",
+    "rrPriorityNote": "(No effect in Round Robin)",
+    "submitTask": "Submit Task",
+    "stressTest": "Stress Test (Add 10 Tasks)"
+  },
+  "monitor": {
+    "title": "CPU Core Monitor",
+    "activeAlgorithm": "Active Algorithm:",
+    "core": "Core {{id}}",
+    "task": "Task: {{id}}",
+    "waiting": "Waiting for tasks..."
+  },
+  "queue": {
+    "title": "Ready Queue",
+    "inQueue": "{{count}} Waiting",
+    "empty": "Queue is empty.",
+    "resumed": "Resumed",
+    "resumedTooltip": "Resumed from {{count}} primes found",
+    "complexity": "Complexity: {{value}}x"
+  },
+  "logs": {
+    "title": "System Logs",
+    "clear": "Clear",
+    "empty": "No logs recorded yet."
+  },
+  "benchmarkModal": {
+    "title": "Benchmark Mode Settings",
+    "taskCount": "Task Count",
+    "complexity": "Task Complexity",
+    "description": "Will run with current algorithm ({{algorithm}}) and {{maxCores}} cores. Tasks will enter queue with short delays.",
+    "start": "Start Benchmark",
+    "cancel": "Cancel"
+  },
+  "infoModal": {
+    "close": "Close",
+    "keyPoints": "Key Points",
+    "sourceNote": "Conceptual Source: CPU Scheduling topics in Operating System concepts (Silberschatz, Galvin, Gagne)"
+  },
+  "stats": {
+    "title": "Final Benchmark Statistics",
+    "completedTasks": "{{completed}} of {{total}} tasks completed",
+    "avgTurnaround": "Avg Turnaround",
+    "avgWaiting": "Avg Waiting",
+    "avgResponse": "Avg Response",
+    "cpuUtilization": "CPU Utilization",
+    "throughput": "Throughput",
+    "ms": "ms",
+    "percent": "%",
+    "tasksPerSec": "tasks/sec",
+    "taskDetails": "Task Details",
+    "table": {
+      "taskId": "Task ID",
+      "priority": "Priority",
+      "arrival": "Arrival",
+      "firstRun": "First Run",
+      "completion": "Completion",
+      "tat": "TAT",
+      "wt": "WT",
+      "rt": "RT"
+    },
+    "note": "All time values are in milliseconds and seconds",
+    "close": "Close"
+  },
+  "algorithms": {
+    "FIFO": {
+      "title": "FIFO — First In, First Out",
+      "subtitle": "First-Come, First-Served Scheduling",
+      "badge": "Non-preemptive",
+      "description": "In the FIFO algorithm, tasks are executed on free cores in the exact order they arrive in the ready queue. This is one of the simplest scheduling algorithms taught in OS reference books (e.g., Silberschatz & Tanenbaum) as an introductory concept.",
+      "keyPoints": [
+        "This algorithm is Non-preemptive; no running task can be interrupted by another task.",
+        "It is fair in terms of arrival order, but can suffer from the 'Convoy Effect' where short tasks wait behind long ones.",
+        "In this simulator, when a core becomes idle, the first task in queue is assigned regardless of priority."
+      ],
+      "note": null
+    },
+    "PRIORITY": {
+      "title": "Priority Scheduling",
+      "subtitle": "Scheduling based on task importance",
+      "badge": "Preemptive",
+      "description": "In Priority Scheduling, each task has a priority value. The scheduler always picks the highest priority task available. If a higher priority task arrives while all cores are busy, the lowest priority running task is preempted.",
+      "keyPoints": [
+        "This version is Preemptive; a running task can be interrupted by a higher priority arrival.",
+        "Context Switching state saving is intentionally omitted for preemption here, causing preempted tasks to restart from 0% progress upon returning to the queue.",
+        "This reflects a system without process control blocks (PCB) context saving for educational demonstration of preemptive vs non-preemptive concepts.",
+        "Can lead to Starvation: low-priority tasks may never complete if high-priority tasks arrive continuously."
+      ],
+      "note": "Note: On multi-core systems, if an idle core is available when a high-priority task arrives, the dispatcher assigns it directly without preemption. Preempted tasks re-entering queue may execute simultaneously on other free cores."
+    },
+    "ROUND_ROBIN": {
+      "title": "Round Robin",
+      "subtitle": "Fair scheduling based on time quantum",
+      "badge": "Preemptive (Time-based)",
+      "description": "In Round Robin, each task gets a fixed time slice (Time Quantum). If unfinished within this time, it is preempted, state is saved, and moved to the back of the queue. This is the foundation of modern time-sharing operating systems.",
+      "keyPoints": [
+        "Unlike Priority, preemption occurs purely due to time expiration (Time Quantum).",
+        "Context Saving is implemented in this simulator; preempted tasks resume exact progress when scheduled again.",
+        "Tasks preempted by time quantum return to the end of the ready queue to maintain round-robin fairness.",
+        "Selecting Time Quantum size is crucial: too small increases context switch overhead, too large degrades to FIFO."
+      ],
+      "note": "Note: Context switching overhead is simulated without time penalty here for clarity."
+    }
+  }
+}

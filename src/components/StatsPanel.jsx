@@ -1,3 +1,5 @@
+import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   calculateTaskMetrics,
   calculateAverageMetrics,
@@ -5,26 +7,30 @@ import {
 import { formatTime } from "../utils/formatTime";
 
 export default function StatsPanel({ tasks, coreCount, onClose }) {
+  const { t } = useTranslation();
   const averages = calculateAverageMetrics(tasks, coreCount);
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-gray-900 rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-gray-800">
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6">
+        <div className="bg-gradient-to-r rtl:bg-gradient-to-l from-indigo-600 to-purple-600 p-6">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold text-white flex items-center gap-3">
                 <span className="text-3xl">📊</span>
-                آمار نهایی Benchmark
+                {t("stats.title")}
               </h2>
               <p className="text-sm mt-1 text-indigo-100">
-                {averages.completedCount} از {tasks.length} تسک تکمیل‌شده
+                {t("stats.completedTasks", {
+                  completed: averages.completedCount,
+                  total: tasks.length,
+                })}
               </p>
             </div>
             <button
               onClick={onClose}
               className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white"
-              aria-label="بستن"
+              aria-label={t("stats.close")}
             >
               <svg
                 className="w-6 h-6"
@@ -45,84 +51,96 @@ export default function StatsPanel({ tasks, coreCount, onClose }) {
 
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 p-6 bg-gray-800/50">
           <div className="bg-gray-800 p-4 rounded-xl border border-gray-700 hover:border-indigo-500/50 transition-colors">
-            <p className="text-xs text-gray-400 mb-1">میانگین Turnaround</p>
+            <p className="text-xs text-gray-400 mb-1">
+              {t("stats.avgTurnaround")}
+            </p>
             <p className="text-2xl font-bold text-indigo-400">
               {averages.avgTurnaround}
             </p>
-            <p className="text-xs text-gray-500 mt-1">میلی‌ثانیه</p>
+            <p className="text-xs text-gray-500 mt-1">{t("stats.ms")}</p>
           </div>
 
           <div className="bg-gray-800 p-4 rounded-xl border border-gray-700 hover:border-purple-500/50 transition-colors">
-            <p className="text-xs text-gray-400 mb-1">میانگین Waiting</p>
+            <p className="text-xs text-gray-400 mb-1">
+              {t("stats.avgWaiting")}
+            </p>
             <p className="text-2xl font-bold text-purple-400">
               {averages.avgWaiting}
             </p>
-            <p className="text-xs text-gray-500 mt-1">میلی‌ثانیه</p>
+            <p className="text-xs text-gray-500 mt-1">{t("stats.ms")}</p>
           </div>
 
           <div className="bg-gray-800 p-4 rounded-xl border border-gray-700 hover:border-pink-500/50 transition-colors">
-            <p className="text-xs text-gray-400 mb-1">میانگین Response</p>
+            <p className="text-xs text-gray-400 mb-1">
+              {t("stats.avgResponse")}
+            </p>
             <p className="text-2xl font-bold text-pink-400">
               {averages.avgResponse}
             </p>
-            <p className="text-xs text-gray-500 mt-1">میلی‌ثانیه</p>
+            <p className="text-xs text-gray-500 mt-1">{t("stats.ms")}</p>
           </div>
 
           <div className="bg-gray-800 p-4 rounded-xl border border-gray-700 hover:border-green-500/50 transition-colors">
-            <p className="text-xs text-gray-400 mb-1">CPU Utilization</p>
+            <p className="text-xs text-gray-400 mb-1">
+              {t("stats.cpuUtilization")}
+            </p>
             <p className="text-2xl font-bold text-green-400">
               {averages.cpuUtilization}
             </p>
-            <p className="text-xs text-gray-500 mt-1">درصد</p>
+            <p className="text-xs text-gray-500 mt-1">{t("stats.percent")}</p>
           </div>
 
           <div className="bg-gray-800 p-4 rounded-xl border border-gray-700 hover:border-blue-500/50 transition-colors">
-            <p className="text-xs text-gray-400 mb-1">Throughput</p>
+            <p className="text-xs text-gray-400 mb-1">
+              {t("stats.throughput")}
+            </p>
             <p className="text-2xl font-bold text-blue-400">
               {averages.throughput}
             </p>
-            <p className="text-xs text-gray-500 mt-1">تسک/ثانیه</p>
+            <p className="text-xs text-gray-500 mt-1">
+              {t("stats.tasksPerSec")}
+            </p>
           </div>
         </div>
 
         <div className="flex-1 overflow-auto p-6">
           <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
             <span className="w-1 h-5 bg-indigo-500 rounded"></span>
-            جزئیات تسک‌ها
+            {t("stats.taskDetails")}
           </h3>
 
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-700">
-                  <th className="text-right p-3 text-gray-400 font-medium">
-                    Task ID
+                  <th className="text-start p-3 text-gray-400 font-medium">
+                    {t("stats.table.taskId")}
                   </th>
                   <th className="text-center p-3 text-gray-400 font-medium">
-                    Priority
+                    {t("stats.table.priority")}
                   </th>
                   <th className="text-center p-3 text-gray-400 font-medium hidden sm:table-cell">
-                    Arrival
+                    {t("stats.table.arrival")}
                   </th>
                   <th className="text-center p-3 text-gray-400 font-medium hidden md:table-cell">
-                    First Run
+                    {t("stats.table.firstRun")}
                   </th>
                   <th className="text-center p-3 text-gray-400 font-medium hidden lg:table-cell">
-                    Completion
+                    {t("stats.table.completion")}
                   </th>
                   <th className="text-center p-3 text-gray-400 font-medium">
-                    TAT
+                    {t("stats.table.tat")}
                   </th>
                   <th className="text-center p-3 text-gray-400 font-medium">
-                    WT
+                    {t("stats.table.wt")}
                   </th>
                   <th className="text-center p-3 text-gray-400 font-medium">
-                    RT
+                    {t("stats.table.rt")}
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {tasks.map((task, idx) => {
+                {tasks.map((task) => {
                   const metrics = calculateTaskMetrics(task);
                   return (
                     <tr
@@ -172,14 +190,12 @@ export default function StatsPanel({ tasks, coreCount, onClose }) {
         </div>
 
         <div className="p-6 bg-gray-800/50 border-t border-gray-800 flex justify-between items-center">
-          <p className="text-xs text-gray-500">
-            کلیه مقادیر زمانی بر حسب میلی‌ثانیه و ثانیه هستند
-          </p>
+          <p className="text-xs text-gray-500">{t("stats.note")}</p>
           <button
             onClick={onClose}
-            className="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all font-medium shadow-lg shadow-indigo-500/25"
+            className="px-6 py-2.5 bg-gradient-to-r rtl:bg-gradient-to-l from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all font-medium shadow-lg shadow-indigo-500/25"
           >
-            بستن
+            {t("stats.close")}
           </button>
         </div>
       </div>
