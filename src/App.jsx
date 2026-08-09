@@ -57,38 +57,39 @@ function InfoModal({ algorithm, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-[fadeIn_0.15s_ease-out]"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-sm animate-[fadeIn_0.15s_ease-out]"
       onClick={onClose}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-2xl max-h-[85vh] overflow-y-auto bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl shadow-black/50 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-700 [&::-webkit-scrollbar-thumb]:rounded-full"
+        className="w-full max-w-2xl max-h-[90vh] sm:max-h-[85vh] overflow-y-auto bg-gray-900 border-t sm:border border-gray-700 rounded-t-3xl sm:rounded-2xl shadow-2xl shadow-black/50 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-700 [&::-webkit-scrollbar-thumb]:rounded-full"
       >
-        <div className="sticky top-0 bg-gray-900/95 backdrop-blur border-b border-gray-800 p-5 flex items-start justify-between gap-4">
+        <div className="sm:hidden w-12 h-1 bg-gray-700 rounded-full mx-auto my-3" />
+        <div className="sticky top-0 bg-gray-900/95 backdrop-blur border-b border-gray-800 p-4 sm:p-5 flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="text-xl font-extrabold text-white">
+              <h3 className="text-lg sm:text-xl font-extrabold text-white">
                 {info.title}
               </h3>
               <span
-                className={`text-[11px] px-2.5 py-1 rounded-full border font-medium ${info.badgeColor}`}
+                className={`text-[11px] px-2.5 py-0.5 rounded-full border font-medium ${info.badgeColor}`}
               >
                 {info.badge}
               </span>
             </div>
-            <p className="text-sm text-gray-500 mt-1">{info.subtitle}</p>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">{info.subtitle}</p>
           </div>
           <button
             onClick={onClose}
-            className="shrink-0 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg w-9 h-9 flex items-center justify-center transition-colors text-xl leading-none"
+            className="shrink-0 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg w-10 h-10 flex items-center justify-center transition-colors text-2xl leading-none"
             aria-label={t("infoModal.close")}
           >
             ×
           </button>
         </div>
 
-        <div className="p-6 space-y-6">
-          <p className="text-gray-300 leading-8 text-[15px]">
+        <div className="p-4 sm:p-6 space-y-5 sm:space-y-6">
+          <p className="text-gray-300 leading-7 sm:leading-8 text-sm sm:text-[15px]">
             {info.description}
           </p>
 
@@ -97,26 +98,26 @@ function InfoModal({ algorithm, onClose }) {
               <span className="w-1.5 h-4 rounded-full bg-blue-500" />
               {t("infoModal.keyPoints")}
             </h4>
-            <ul className="space-y-3">
+            <ul className="space-y-2.5 sm:space-y-3">
               {Array.isArray(info.keyPoints) &&
                 info.keyPoints.map((point, i) => (
                   <li
                     key={i}
-                    className="flex items-start gap-3 bg-gray-950/50 border border-gray-800 rounded-xl p-3.5"
+                    className="flex items-start gap-3 bg-gray-950/50 border border-gray-800 rounded-xl p-3 sm:p-3.5"
                   >
                     <span className="shrink-0 mt-0.5 w-5 h-5 rounded-full bg-blue-600/20 text-blue-400 text-[11px] font-bold flex items-center justify-center">
                       {i + 1}
                     </span>
-                    <p className="text-sm text-gray-300 leading-7">{point}</p>
+                    <p className="text-xs sm:text-sm text-gray-300 leading-6 sm:leading-7">{point}</p>
                   </li>
                 ))}
             </ul>
           </div>
 
           {info.note && (
-            <div className="flex items-start gap-3 bg-amber-950/30 border border-amber-800/40 rounded-xl p-4">
+            <div className="flex items-start gap-3 bg-amber-950/30 border border-amber-800/40 rounded-xl p-3.5 sm:p-4">
               <span className="shrink-0 text-amber-400 text-lg">⚠</span>
-              <p className="text-sm text-amber-200/90 leading-7">{info.note}</p>
+              <p className="text-xs sm:text-sm text-amber-200/90 leading-6 sm:leading-7">{info.note}</p>
             </div>
           )}
 
@@ -160,6 +161,9 @@ export default function App() {
   const [benchTaskCount, setBenchTaskCount] = useState(8);
   const [benchComplexity, setBenchComplexity] = useState(3);
 
+  // حالت تب‌های موبایل
+  const [mobileTab, setMobileTab] = useState("monitor"); // 'monitor' | 'controls' | 'queue'
+
   const activeCores = cores.filter((c) => c.status !== "idle").length;
   const currentInfo = getAlgorithmInfo(algorithm, t);
   const isRoundRobin = algorithm === "ROUND_ROBIN";
@@ -196,7 +200,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-gray-100">
+    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-gray-100 pb-20 lg:pb-0">
       {showInfoModal && (
         <InfoModal
           algorithm={algorithm}
@@ -213,15 +217,16 @@ export default function App() {
       )}
 
       {showBenchmarkForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl max-w-md w-full p-6">
-            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+        <div className="fixed inset-0 bg-black/75 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 backdrop-blur-sm">
+          <div className="bg-gray-900 border-t sm:border border-gray-700 rounded-t-3xl sm:rounded-2xl shadow-2xl max-w-md w-full p-5 sm:p-6">
+            <div className="sm:hidden w-12 h-1 bg-gray-700 rounded-full mx-auto mb-4" />
+            <h2 className="text-lg sm:text-xl font-bold text-white mb-4 flex items-center gap-2">
               <span className="w-1.5 h-5 rounded-full bg-indigo-500" />
               {t("benchmarkModal.title")}
             </h2>
 
             <div className="mb-4">
-              <div className="flex justify-between items-baseline mb-1.5">
+              <div className="flex justify-between items-baseline mb-2">
                 <label className="text-sm text-gray-400">
                   {t("benchmarkModal.taskCount")}
                 </label>
@@ -235,12 +240,12 @@ export default function App() {
                 max="30"
                 value={benchTaskCount}
                 onChange={(e) => setBenchTaskCount(Number(e.target.value))}
-                className="w-full h-2 rounded-full cursor-pointer accent-indigo-500 bg-gray-800"
+                className="w-full h-3 sm:h-2 rounded-full cursor-pointer accent-indigo-500 bg-gray-800 touch-pan-x"
               />
             </div>
 
-            <div className="mb-6">
-              <div className="flex justify-between items-baseline mb-1.5">
+            <div className="mb-5">
+              <div className="flex justify-between items-baseline mb-2">
                 <label className="text-sm text-gray-400">
                   {t("benchmarkModal.complexity")}
                 </label>
@@ -254,7 +259,7 @@ export default function App() {
                 max="10"
                 value={benchComplexity}
                 onChange={(e) => setBenchComplexity(Number(e.target.value))}
-                className="w-full h-2 rounded-full cursor-pointer accent-indigo-500 bg-gray-800"
+                className="w-full h-3 sm:h-2 rounded-full cursor-pointer accent-indigo-500 bg-gray-800 touch-pan-x"
               />
             </div>
 
@@ -268,13 +273,13 @@ export default function App() {
             <div className="flex gap-3">
               <button
                 onClick={handleStartBenchmark}
-                className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl transition-all"
+                className="flex-1 min-h-[44px] bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-bold py-2.5 rounded-xl transition-all"
               >
                 {t("benchmarkModal.start")}
               </button>
               <button
                 onClick={() => setShowBenchmarkForm(false)}
-                className="px-5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl transition-all"
+                className="px-5 min-h-[44px] bg-gray-800 hover:bg-gray-700 active:bg-gray-850 text-gray-300 rounded-xl transition-all"
               >
                 {t("benchmarkModal.cancel")}
               </button>
@@ -283,41 +288,53 @@ export default function App() {
         </div>
       )}
 
-      <div className="sticky top-0 z-20 backdrop-blur-md bg-gray-950/70 border-b border-gray-800">
-        <header className="max-w-[1600px] mx-auto px-6 py-5 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-extrabold bg-gradient-to-r rtl:bg-gradient-to-l from-blue-400 to-cyan-300 bg-clip-text text-transparent">
-              {t("header.title")}
-            </h1>
-            <p className="text-gray-500 text-xs md:text-sm mt-1">
-              {t("header.subtitle")}
-            </p>
-          </div>
+      {/* هدر ریسپانسیو و بهینه‌شده */}
+      <div className="sticky top-0 z-20 backdrop-blur-md bg-gray-950/80 border-b border-gray-800/80">
+        <header className="max-w-[1600px] mx-auto px-4 sm:px-6 py-3.5 sm:py-5 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold bg-gradient-to-r rtl:bg-gradient-to-l from-blue-400 to-cyan-300 bg-clip-text text-transparent">
+                {t("header.title")}
+              </h1>
+              <p className="text-gray-500 text-xs sm:text-sm mt-0.5">
+                {t("header.subtitle")}
+              </p>
+            </div>
 
-          <div className="flex items-center gap-3 text-sm flex-wrap">
             <button
               onClick={toggleLanguage}
-              className="bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 rounded-lg px-3 py-1.5 font-medium transition-colors"
+              className="md:hidden bg-indigo-600/20 active:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 rounded-lg px-3 py-1.5 text-xs font-semibold"
+            >
+              {i18n.language === "fa" ? "EN" : "FA"}
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm overflow-x-auto pb-1 md:pb-0 [&::-webkit-scrollbar]:hidden">
+            <button
+              onClick={toggleLanguage}
+              className="hidden md:block bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 rounded-lg px-3 py-1.5 font-medium transition-colors"
             >
               {i18n.language === "fa" ? "English" : "فارسی"}
             </button>
 
-            <div className="flex items-center gap-2 bg-gray-800/80 border border-gray-700 rounded-lg px-3 py-1.5">
+            <div className="flex items-center gap-1.5 shrink-0 bg-gray-800/80 border border-gray-700/70 rounded-lg px-2.5 py-1.5">
               <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
-              <span className="text-gray-300">
+              <span className="text-gray-300 whitespace-nowrap">
                 {t("header.activeCores", { active: activeCores, max: maxCores })}
               </span>
             </div>
-            <div className="flex items-center gap-2 bg-gray-800/80 border border-gray-700 rounded-lg px-3 py-1.5">
+
+            <div className="flex items-center gap-1.5 shrink-0 bg-gray-800/80 border border-gray-700/70 rounded-lg px-2.5 py-1.5">
               <span className="w-2 h-2 rounded-full bg-yellow-400" />
-              <span className="text-gray-300">
+              <span className="text-gray-300 whitespace-nowrap">
                 {t("header.inQueue", { count: queue.length })}
               </span>
             </div>
+
             {isRoundRobin && (
-              <div className="flex items-center gap-2 bg-cyan-900/30 border border-cyan-700/40 rounded-lg px-3 py-1.5">
+              <div className="flex items-center gap-1.5 shrink-0 bg-cyan-900/30 border border-cyan-700/40 rounded-lg px-2.5 py-1.5">
                 <span className="w-2 h-2 rounded-full bg-cyan-400" />
-                <span className="text-cyan-300">
+                <span className="text-cyan-300 whitespace-nowrap">
                   {t("header.quantum", { ms: timeQuantum })}
                 </span>
               </div>
@@ -326,13 +343,13 @@ export default function App() {
             {!benchmarkMode ? (
               <button
                 onClick={() => setShowBenchmarkForm(true)}
-                className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 border border-indigo-500/40 rounded-lg px-3 py-1.5 text-white font-medium transition-colors"
+                className="shrink-0 flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 border border-indigo-500/40 rounded-lg px-3 py-1.5 text-white font-medium transition-colors"
               >
                 {t("header.benchmarkMode")}
               </button>
             ) : (
-              <div className="flex items-center gap-2">
-                <span className="flex items-center gap-2 bg-indigo-900/30 border border-indigo-700/40 rounded-lg px-3 py-1.5 text-indigo-300">
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="flex items-center gap-1.5 bg-indigo-900/30 border border-indigo-700/40 rounded-lg px-2.5 py-1.5 text-indigo-300">
                   <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
                   {t("header.benchmarkProgress", {
                     completed: completedTasks.length,
@@ -341,13 +358,13 @@ export default function App() {
                 </span>
                 <button
                   onClick={() => setShowStatsPanel(true)}
-                  className="bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg px-3 py-1.5 text-gray-300 transition-colors"
+                  className="bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg px-2.5 py-1.5 text-gray-300 transition-colors"
                 >
                   {t("header.viewStats")}
                 </button>
                 <button
                   onClick={exitBenchmark}
-                  className="bg-red-900/40 hover:bg-red-800/60 border border-red-700/40 rounded-lg px-3 py-1.5 text-red-300 transition-colors"
+                  className="bg-red-900/40 hover:bg-red-800/60 border border-red-700/40 rounded-lg px-2.5 py-1.5 text-red-300 transition-colors"
                 >
                   {t("header.exit")}
                 </button>
@@ -357,16 +374,60 @@ export default function App() {
         </header>
       </div>
 
-      <main className="max-w-[1600px] mx-auto p-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div className="bg-gray-900/60 backdrop-blur p-5 rounded-2xl shadow-xl border border-gray-800 h-fit lg:sticky lg:top-24">
-          <h2 className="text-lg font-bold mb-5 text-white flex items-center gap-2">
+      {/* نوار تب‌های موبایل (ثابت در پایین صفحه برای ارگونومی بهتر شست) */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-gray-950/95 border-t border-gray-800 backdrop-blur-lg px-2 py-2">
+        <div className="grid grid-cols-3 gap-1 max-w-md mx-auto">
+          <button
+            onClick={() => setMobileTab("monitor")}
+            className={`flex flex-col items-center justify-center py-2 rounded-xl text-xs font-medium transition-all ${
+              mobileTab === "monitor"
+                ? "bg-blue-600/20 text-blue-400 border border-blue-500/40"
+                : "text-gray-400 hover:text-gray-200"
+            }`}
+          >
+            <span className="text-base mb-0.5">📊</span>
+            {t("monitor.title")}
+          </button>
+          <button
+            onClick={() => setMobileTab("controls")}
+            className={`flex flex-col items-center justify-center py-2 rounded-xl text-xs font-medium transition-all ${
+              mobileTab === "controls"
+                ? "bg-blue-600/20 text-blue-400 border border-blue-500/40"
+                : "text-gray-400 hover:text-gray-200"
+            }`}
+          >
+            <span className="text-base mb-0.5">⚙️</span>
+            {t("controlPanel.title")}
+          </button>
+          <button
+            onClick={() => setMobileTab("queue")}
+            className={`flex flex-col items-center justify-center py-2 rounded-xl text-xs font-medium transition-all ${
+              mobileTab === "queue"
+                ? "bg-blue-600/20 text-blue-400 border border-blue-500/40"
+                : "text-gray-400 hover:text-gray-200"
+            }`}
+          >
+            <span className="text-base mb-0.5">📋</span>
+            {t("queue.title")} ({queue.length})
+          </button>
+        </div>
+      </div>
+
+      <main className="max-w-[1600px] mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* پنل تنظیمات و کنترل */}
+        <div
+          className={`bg-gray-900/60 backdrop-blur p-4 sm:p-5 rounded-2xl shadow-xl border border-gray-800 h-fit lg:sticky lg:top-24 ${
+            mobileTab === "controls" ? "block" : "hidden lg:block"
+          }`}
+        >
+          <h2 className="text-base sm:text-lg font-bold mb-4 sm:mb-5 text-white flex items-center gap-2">
             <span className="w-1.5 h-5 rounded-full bg-blue-500" />
             {t("controlPanel.title")}
           </h2>
 
           <div className="mb-5">
-            <div className="flex justify-between items-baseline mb-1.5">
-              <label className="text-sm text-gray-400">
+            <div className="flex justify-between items-baseline mb-2">
+              <label className="text-xs sm:text-sm text-gray-400">
                 {t("controlPanel.activeCores")}
               </label>
               <span className="text-sm font-mono font-bold text-blue-400">
@@ -379,23 +440,23 @@ export default function App() {
               max={hardwareCores * 2}
               value={maxCores}
               onChange={(e) => setMaxCores(Number(e.target.value))}
-              className="w-full h-2 rounded-full cursor-pointer accent-blue-500 bg-gray-800"
+              className="w-full h-3 sm:h-2 rounded-full cursor-pointer accent-blue-500 bg-gray-800 touch-pan-x"
             />
-            <p className="text-xs text-gray-600 mt-1.5">
+            <p className="text-[11px] text-gray-600 mt-1.5">
               {t("controlPanel.hardwareLimit", { cores: hardwareCores })}
             </p>
           </div>
 
           <div className="mb-5">
-            <div className="flex justify-between items-center mb-1.5">
-              <label className="text-sm text-gray-400">
+            <div className="flex justify-between items-center mb-2">
+              <label className="text-xs sm:text-sm text-gray-400">
                 {t("controlPanel.algorithm")}
               </label>
               <button
                 type="button"
                 onClick={() => setShowInfoModal(true)}
                 title={t("controlPanel.algoGuide")}
-                className="w-5 h-5 rounded-full bg-gray-800 hover:bg-blue-600 border border-gray-700 hover:border-blue-500 text-gray-400 hover:text-white text-[11px] font-bold flex items-center justify-center transition-colors"
+                className="w-6 h-6 sm:w-5 sm:h-5 rounded-full bg-gray-800 hover:bg-blue-600 border border-gray-700 hover:border-blue-500 text-gray-400 hover:text-white text-xs sm:text-[11px] font-bold flex items-center justify-center transition-colors"
               >
                 ?
               </button>
@@ -404,7 +465,7 @@ export default function App() {
               value={algorithm}
               onChange={(e) => setAlgorithm(e.target.value)}
               disabled={benchmarkMode}
-              className="w-full bg-gray-950 border border-gray-700 rounded-lg p-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full min-h-[44px] sm:min-h-0 bg-gray-950 border border-gray-700 rounded-xl p-2.5 text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <option value="FIFO">{t("controlPanel.algoOptions.fifo")}</option>
               <option value="PRIORITY">
@@ -433,19 +494,19 @@ export default function App() {
 
           {isRoundRobin && (
             <div className="mb-5 bg-cyan-950/20 border border-cyan-800/30 rounded-xl p-3.5 animate-[fadeIn_0.2s_ease-out]">
-              <div className="flex justify-between items-center mb-1.5">
-                <label className="text-sm text-cyan-300 flex items-center gap-1.5">
+              <div className="flex justify-between items-center mb-2">
+                <label className="text-xs sm:text-sm text-cyan-300 flex items-center gap-1.5">
                   {t("controlPanel.timeQuantum")}
                   <button
                     type="button"
                     onClick={() => setShowInfoModal(true)}
                     title={t("controlPanel.timeQuantumGuide")}
-                    className="w-4 h-4 rounded-full bg-cyan-900/50 hover:bg-cyan-700 border border-cyan-700/50 text-cyan-300 hover:text-white text-[9px] font-bold flex items-center justify-center transition-colors"
+                    className="w-5 h-5 sm:w-4 sm:h-4 rounded-full bg-cyan-900/50 hover:bg-cyan-700 border border-cyan-700/50 text-cyan-300 hover:text-white text-[10px] sm:text-[9px] font-bold flex items-center justify-center transition-colors"
                   >
                     ?
                   </button>
                 </label>
-                <span className="text-sm font-mono font-bold text-cyan-400">
+                <span className="text-xs sm:text-sm font-mono font-bold text-cyan-400">
                   {timeQuantum}ms
                 </span>
               </div>
@@ -456,7 +517,7 @@ export default function App() {
                 step="500"
                 value={timeQuantum}
                 onChange={(e) => setTimeQuantum(Number(e.target.value))}
-                className="w-full h-2 rounded-full cursor-pointer accent-cyan-500 bg-gray-800"
+                className="w-full h-3 sm:h-2 rounded-full cursor-pointer accent-cyan-500 bg-gray-800 touch-pan-x"
               />
               <p className="text-[11px] text-cyan-200/60 mt-1.5 leading-5">
                 {t("controlPanel.timeQuantumDesc", { ms: timeQuantum })}
@@ -464,11 +525,11 @@ export default function App() {
             </div>
           )}
 
-          <div className="border-t border-gray-800 my-5" />
+          <div className="border-t border-gray-800 my-4 sm:my-5" />
 
           <div className="mb-5">
-            <div className="flex justify-between items-baseline mb-1.5">
-              <label className="text-sm text-gray-400">
+            <div className="flex justify-between items-baseline mb-2">
+              <label className="text-xs sm:text-sm text-gray-400">
                 {t("controlPanel.taskComplexity")}
               </label>
             </div>
@@ -479,7 +540,7 @@ export default function App() {
               value={taskComplexity}
               onChange={(e) => setTaskComplexity(Number(e.target.value))}
               disabled={benchmarkMode}
-              className="w-full h-2 rounded-full cursor-pointer accent-emerald-500 bg-gray-800 disabled:opacity-50"
+              className="w-full h-3 sm:h-2 rounded-full cursor-pointer accent-emerald-500 bg-gray-800 disabled:opacity-50 touch-pan-x"
             />
             <div className="text-start text-xs font-mono text-emerald-400 mt-1">
               {t("controlPanel.complexityMultiplier", {
@@ -489,10 +550,10 @@ export default function App() {
           </div>
 
           <div className="mb-6">
-            <label className="block text-sm text-gray-400 mb-1.5">
+            <label className="block text-xs sm:text-sm text-gray-400 mb-2">
               {t("controlPanel.taskPriority")}
               {isRoundRobin && (
-                <span className="text-[10px] text-gray-600 mx-1.5">
+                <span className="text-[10px] text-gray-600 block sm:inline mt-0.5 sm:mt-0 sm:mx-1.5">
                   {t("controlPanel.rrPriorityNote")}
                 </span>
               )}
@@ -510,7 +571,7 @@ export default function App() {
                     type="button"
                     onClick={() => setTaskPriority(opt.v)}
                     disabled={benchmarkMode}
-                    className={`text-xs py-2 rounded-lg border transition-all font-medium disabled:opacity-50 ${
+                    className={`min-h-[44px] sm:min-h-0 text-xs py-2.5 sm:py-2 rounded-xl sm:rounded-lg border transition-all font-medium disabled:opacity-50 ${
                       taskPriority === opt.v
                         ? `${ps.bg} ${ps.text} border-current`
                         : "bg-gray-950 border-gray-700 text-gray-500 hover:border-gray-500"
@@ -526,7 +587,7 @@ export default function App() {
           <button
             onClick={() => addTask(taskComplexity, taskPriority)}
             disabled={benchmarkMode}
-            className="w-full bg-blue-600 hover:bg-blue-500 active:scale-[0.98] transition-all text-white font-bold py-2.5 px-4 rounded-xl shadow-lg shadow-blue-900/30 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full min-h-[44px] bg-blue-600 hover:bg-blue-500 active:scale-[0.98] transition-all text-white font-bold py-3 sm:py-2.5 px-4 rounded-xl shadow-lg shadow-blue-900/30 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
           >
             {t("controlPanel.submitTask")}
           </button>
@@ -540,16 +601,22 @@ export default function App() {
                 );
             }}
             disabled={benchmarkMode}
-            className="w-full mt-2.5 bg-purple-600/90 hover:bg-purple-500 active:scale-[0.98] transition-all text-white font-bold py-2.5 px-4 rounded-xl shadow-lg shadow-purple-900/30 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full min-h-[44px] mt-2.5 bg-purple-600/90 hover:bg-purple-500 active:scale-[0.98] transition-all text-white font-bold py-3 sm:py-2.5 px-4 rounded-xl shadow-lg shadow-purple-900/30 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
           >
             {t("controlPanel.stressTest")}
           </button>
         </div>
 
+        {/* بخش مانیتورینگ و لاگ‌ها */}
         <div className="lg:col-span-3 flex flex-col gap-6">
-          <div className="bg-gray-900/60 backdrop-blur p-5 rounded-2xl border border-gray-800 shadow-xl">
+          {/* مانیتور هسته‌ها */}
+          <div
+            className={`bg-gray-900/60 backdrop-blur p-4 sm:p-5 rounded-2xl border border-gray-800 shadow-xl ${
+              mobileTab === "monitor" ? "block" : "hidden lg:block"
+            }`}
+          >
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
                 <span className="w-1.5 h-5 rounded-full bg-cyan-500" />
                 {t("monitor.title")}
               </h2>
@@ -560,13 +627,14 @@ export default function App() {
                 </span>
               </span>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-4">
               {cores.map((core) => {
                 const busy = core.status !== "idle";
                 return (
                   <div
                     key={core.id}
-                    className={`relative overflow-hidden p-4 rounded-xl border transition-all duration-300 ${
+                    className={`relative overflow-hidden p-3.5 sm:p-4 rounded-xl border transition-all duration-300 ${
                       busy
                         ? isRoundRobin
                           ? "border-cyan-500/60 bg-gradient-to-br from-cyan-950/50 to-gray-900 shadow-lg shadow-cyan-900/20"
@@ -581,8 +649,8 @@ export default function App() {
                         } animate-pulse`}
                       />
                     )}
-                    <div className="flex justify-between items-center mb-3">
-                      <span className="font-bold text-gray-300 text-sm">
+                    <div className="flex justify-between items-center mb-2.5 sm:mb-3">
+                      <span className="font-bold text-gray-300 text-xs sm:text-sm">
                         {t("monitor.core", { id: core.id })}
                       </span>
                       <span
@@ -612,9 +680,9 @@ export default function App() {
                         >
                           {t("monitor.task", { id: core.taskId })}
                         </p>
-                        <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+                        <div className="w-full bg-gray-800 rounded-full h-2.5 sm:h-2 overflow-hidden">
                           <div
-                            className={`h-2 rounded-full transition-all duration-300 ease-out bg-gradient-to-r rtl:bg-gradient-to-l ${
+                            className={`h-full rounded-full transition-all duration-300 ease-out bg-gradient-to-r rtl:bg-gradient-to-l ${
                               isRoundRobin
                                 ? "from-cyan-500 to-teal-400"
                                 : "from-blue-500 to-cyan-400"
@@ -627,7 +695,7 @@ export default function App() {
                         </p>
                       </div>
                     ) : (
-                      <div className="flex items-center justify-center h-12">
+                      <div className="flex items-center justify-center h-10 sm:h-12">
                         <p className="text-xs text-gray-600">
                           {t("monitor.waiting")}
                         </p>
@@ -639,21 +707,27 @@ export default function App() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-gray-900/60 backdrop-blur p-5 rounded-2xl border border-gray-800 shadow-xl flex flex-col h-80">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+          {/* صف و لاگ‌ها */}
+          <div
+            className={`grid grid-cols-1 md:grid-cols-2 gap-6 ${
+              mobileTab === "queue" ? "block" : "hidden lg:grid"
+            }`}
+          >
+            {/* لیست صف */}
+            <div className="bg-gray-900/60 backdrop-blur p-4 sm:p-5 rounded-2xl border border-gray-800 shadow-xl flex flex-col h-72 sm:h-80 mb-4 lg:mb-0">
+              <div className="flex justify-between items-center mb-3.5 sm:mb-4">
+                <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
                   <span className="w-1.5 h-5 rounded-full bg-yellow-500" />
                   {t("queue.title")}
                 </h2>
-                <span className="bg-yellow-600/90 text-white text-xs px-2.5 py-1 rounded-full font-medium">
+                <span className="bg-yellow-600/90 text-white text-[11px] sm:text-xs px-2.5 py-1 rounded-full font-medium">
                   {t("queue.inQueue", { count: queue.length })}
                 </span>
               </div>
-              <div className="flex-1 overflow-y-auto px-1 space-y-2 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-gray-700 [&::-webkit-scrollbar-thumb]:rounded-full">
+              <div className="flex-1 overflow-y-auto px-0.5 space-y-2 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-gray-700 [&::-webkit-scrollbar-thumb]:rounded-full">
                 {queue.length === 0 ? (
                   <div className="h-full flex items-center justify-center">
-                    <p className="text-gray-600 text-sm italic">
+                    <p className="text-gray-600 text-xs sm:text-sm italic">
                       {t("queue.empty")}
                     </p>
                   </div>
@@ -664,19 +738,19 @@ export default function App() {
                     return (
                       <div
                         key={task.id}
-                        className={`bg-gray-950/60 border p-3 rounded-xl flex justify-between items-center transition-colors ${
+                        className={`bg-gray-950/60 border p-2.5 sm:p-3 rounded-xl flex justify-between items-center transition-colors ${
                           isResumed
                             ? "border-cyan-700/50 hover:border-cyan-600"
                             : "border-gray-800 hover:border-gray-700"
                         }`}
                       >
-                        <div className="flex items-center gap-3">
-                          <span className="text-xs font-mono text-gray-600 w-5">
+                        <div className="flex items-center gap-2.5 sm:gap-3">
+                          <span className="text-xs font-mono text-gray-600 w-4 sm:w-5">
                             {idx + 1}
                           </span>
                           <div>
                             <div className="flex items-center gap-1.5">
-                              <p className="font-mono text-sm text-yellow-400">
+                              <p className="font-mono text-xs sm:text-sm text-yellow-400">
                                 {task.id}
                               </p>
                               {isResumed && (
@@ -698,7 +772,7 @@ export default function App() {
                           </div>
                         </div>
                         <span
-                          className={`text-[11px] px-2 py-1 rounded-lg font-medium ${ps.bg} ${ps.text}`}
+                          className={`text-[10px] sm:text-[11px] px-2 py-1 rounded-lg font-medium ${ps.bg} ${ps.text}`}
                         >
                           {ps.label}
                         </span>
@@ -709,9 +783,10 @@ export default function App() {
               </div>
             </div>
 
-            <div className="bg-gray-900/60 backdrop-blur p-5 rounded-2xl border border-gray-800 shadow-xl flex flex-col h-80">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            {/* لاگ سیستم */}
+            <div className="bg-gray-900/60 backdrop-blur p-4 sm:p-5 rounded-2xl border border-gray-800 shadow-xl flex flex-col h-72 sm:h-80">
+              <div className="flex justify-between items-center mb-3.5 sm:mb-4">
+                <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
                   <span className="w-1.5 h-5 rounded-full bg-green-500" />
                   {t("logs.title")}
                 </h2>
@@ -722,7 +797,7 @@ export default function App() {
                   {t("logs.clear")}
                 </button>
               </div>
-              <div className="flex-1 overflow-y-auto bg-black/40 p-3 rounded-xl font-mono text-xs text-green-400 space-y-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-gray-700 [&::-webkit-scrollbar-thumb]:rounded-full">
+              <div className="flex-1 overflow-y-auto bg-black/40 p-3 rounded-xl font-mono text-xs text-green-400 space-y-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-gray-700 [&::-webkit-scrollbar-thumb]:rounded-full">
                 {logs.length === 0 ? (
                   <div className="h-full flex items-center justify-center">
                     <p className="text-gray-600 italic">{t("logs.empty")}</p>
@@ -731,7 +806,7 @@ export default function App() {
                   logs.map((log, i) => (
                     <p
                       key={i}
-                      className="border-b border-gray-800/60 pb-1 last:border-0"
+                      className="border-b border-gray-800/60 pb-1 last:border-0 leading-5"
                     >
                       {log}
                     </p>
