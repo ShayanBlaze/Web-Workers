@@ -67,12 +67,17 @@ export function useScheduler() {
   const workerPool = useRef({});
   const taskIdCounter = useRef(1);
 
-  const addLog = (message) => {
+  const addLog = (key, params = {}) => {
     setLogs((prev) =>
-      [`[${new Date().toLocaleTimeString("fa-IR")}] ${message}`, ...prev].slice(
-        0,
-        50
-      )
+      [
+        {
+          id: `log-${Date.now()}-${Math.random()}`,
+          timestamp: Date.now(),
+          key,
+          params,
+        },
+        ...prev,
+      ].slice(0, 50)
     );
   };
 
@@ -116,9 +121,12 @@ export function useScheduler() {
           );
         }
 
-        addLog(
-          `تسک ${taskId} روی Core ${coreId} تکمیل شد. ${result} عدد اول در ${executionTime} ثانیه پیدا شد.`
-        );
+        addLog("systemLogs.taskCompleted", {
+          taskId,
+          coreId,
+          result,
+          executionTime,
+        });
       }
 
       setRunningTasks((prev) => {
@@ -182,11 +190,9 @@ export function useScheduler() {
           return updatedQueue;
         });
 
-        addLog(
-          `تسک ${taskId} روی Core ${coreId} به دلیل وقفه (preempted) به صف بازگردانده شد.`
-        );
+        addLog("systemLogs.taskReturnedToQueue", { taskId, coreId });
       } else {
-        addLog(`تسک ${taskId} روی Core ${coreId} لغو شد.`);
+        addLog("systemLogs.taskCancelled", { taskId, coreId });
       }
       return;
     }
@@ -231,9 +237,7 @@ export function useScheduler() {
           return [...filteredQueue, taskWithState];
         });
 
-        addLog(
-          `تسک ${taskId} روی Core ${coreId} به دلیل اتمام کوانتوم زمانی متوقف و به انتهای صف منتقل شد.`
-        );
+        addLog("systemLogs.taskQuantumExpired", { taskId, coreId });
       }
       return;
     }
@@ -307,18 +311,22 @@ export function useScheduler() {
       preemptions.forEach(({ coreId, task }) => {
         if (workerPool.current[coreId]) {
           workerPool.current[coreId].postMessage({ type: "CANCEL" });
-          addLog(
-            `وقفه (Preemption): تسک ${task.id} روی Core ${coreId} برای تسک با اولویت بالاتر ${newTask.id} متوقف شد.`
-          );
+          addLog("systemLogs.taskPreempted", {
+            taskId: task.id,
+            coreId,
+            newTaskId: newTask.id,
+          });
         }
       });
 
       return [...prevQueue, newTask];
     });
 
-    addLog(
-      `تسک ${newTask.id} به صف آماده اضافه شد (Priority: ${priorityVal}, Complexity: ${complexity}x).`
-    );
+    addLog("systemLogs.taskAddedToQueue", {
+      taskId: newTask.id,
+      priority: priorityVal,
+      complexity,
+    });
   }, []);
 
   useEffect(() => {
@@ -375,9 +383,10 @@ export function useScheduler() {
         }));
 
         dispatchedTaskIds.add(taskToRun.id);
-        addLog(
-          `زمان‌بند (Dispatcher) تسک ${taskToRun.id} را به Core ${core.id} اختصاص داد.`
-        );
+        addLog("systemLogs.taskDispatched", {
+          taskId: taskToRun.id,
+          coreId: core.id,
+        });
       }
     });
 
@@ -415,23 +424,23 @@ export function useScheduler() {
           const actualArrival = getRelativeTime();
           const taskWithRealArrival = { ...task, arrivalTime: actualArrival };
           setQueue((prev) => [...prev, taskWithRealArrival]);
-          addLog(`تسک ${task.id} وارد صف شد (Benchmark Mode).`);
+          addLog("systemLogs.taskEntered", { taskId: task.id });
         }, task.arrivalTime);
       } else {
         const taskWithRealArrival = { ...task, arrivalTime: getRelativeTime() };
         setQueue((prev) => [...prev, taskWithRealArrival]);
-        addLog(`تسک ${task.id} وارد صف شد (Benchmark Mode).`);
+        addLog("systemLogs.taskEntered", { taskId: task.id });
       }
     });
 
-    addLog("🚀 حالت Benchmark شروع شد.");
+    addLog("systemLogs.benchmarkStarted");
   }, []);
 
   const exitBenchmark = useCallback(() => {
     setBenchmarkMode(false);
     setBenchmarkTasks([]);
     setCompletedTasks([]);
-    addLog("🛑 حالت Benchmark خاتمه یافت.");
+    addLog("systemLogs.benchmarkEnded");
   }, []);
 
   return {

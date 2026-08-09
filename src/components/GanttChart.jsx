@@ -343,10 +343,10 @@ export default function GanttChart({ timeline = [], coreCount = 1 }) {
                     style={{ backgroundColor: selectedSlice.colorObj.bg }}
                   ></span>
                   <span className="font-bold text-white">
-                    تسک #{selectedSlice.taskId}
+                    {t("stats.taskLabel", { taskId: selectedSlice.taskId })}
                   </span>
                   <span className="bg-gray-800 text-gray-400 px-2 py-0.5 rounded text-[10px] border border-gray-700 font-mono">
-                    Core {selectedSlice.coreId}
+                    {t("stats.coreLabel", { coreId: selectedSlice.coreId })}
                   </span>
                 </div>
 
@@ -357,7 +357,7 @@ export default function GanttChart({ timeline = [], coreCount = 1 }) {
               </div>
             ) : (
               <p className="text-[11px] text-gray-500 italic text-center w-full">
-                👆 روی هر یک از موج‌ها کلیک کنید تا جزئیات زمان‌بندی آن را ببینید.
+                {t("stats.clickWaveInstruction")}
               </p>
             )}
           </div>

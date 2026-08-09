@@ -86,6 +86,12 @@
     "percent": "%",
     "tasksPerSec": "tasks/sec",
     "taskDetails": "Task Details",
+    "ganttChartTitle": "Core Execution Timeline",
+    "waveView": "Wave View (Mobile)",
+    "classicGantt": "Classic Gantt",
+    "taskLabel": "Task #{{taskId}}",
+    "coreLabel": "Core {{coreId}}",
+    "clickWaveInstruction": "👆 Click on any wave to see its scheduling details.",
     "table": {
       "taskId": "Task ID",
       "priority": "Priority",
@@ -138,5 +144,24 @@
       ],
       "note": "Note: Context switching overhead is simulated without time penalty here for clarity."
     }
+  },
+  "systemLogs": {
+    "taskCompleted": "Task {{taskId}} completed on Core {{coreId}}. {{result}} primes found in {{executionTime}} seconds.",
+    "taskCancelled": "Task {{taskId}} on Core {{coreId}} cancelled.",
+    "taskPreempted": "Preemption: Task {{taskId}} on Core {{coreId}} stopped for higher priority task {{newTaskId}}.",
+    "taskReturnedToQueue": "Task {{taskId}} on Core {{coreId}} preempted and returned to queue.",
+    "taskQuantumExpired": "Task {{taskId}} on Core {{coreId}} time quantum expired and moved to end of queue.",
+    "taskAddedToQueue": "Task {{taskId}} added to ready queue (Priority: {{priority}}, Complexity: {{complexity}}x).",
+    "taskEntered": "Task {{taskId}} entered queue (Benchmark Mode).",
+    "taskDispatched": "Dispatcher assigned Task {{taskId}} to Core {{coreId}}.",
+    "benchmarkStarted": "🚀 Benchmark mode started.",
+    "benchmarkEnded": "🛑 Benchmark mode ended."
+  },
+  "gantt": {
+    "title": "Gantt Execution Timeline",
+    "core": "Core {{id}}",
+    "time": "Time (ms)",
+    "idle": "Idle",
+    "task": "Task {{id}}"
   }
 }

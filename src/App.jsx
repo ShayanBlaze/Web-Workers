@@ -797,22 +797,25 @@ export default function App() {
                   {t("logs.clear")}
                 </button>
               </div>
-              <div className="flex-1 overflow-y-auto bg-black/40 p-3 rounded-xl font-mono text-xs text-green-400 space-y-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-gray-700 [&::-webkit-scrollbar-thumb]:rounded-full">
-                {logs.length === 0 ? (
-                  <div className="h-full flex items-center justify-center">
-                    <p className="text-gray-600 italic">{t("logs.empty")}</p>
-                  </div>
-                ) : (
-                  logs.map((log, i) => (
-                    <p
-                      key={i}
-                      className="border-b border-gray-800/60 pb-1 last:border-0 leading-5"
-                    >
-                      {log}
-                    </p>
-                  ))
-                )}
-              </div>
+<div className="flex-1 overflow-y-auto bg-black/40 p-3 rounded-xl font-mono text-xs text-green-400 space-y-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-gray-700 [&::-webkit-scrollbar-thumb]:rounded-full">
+  {logs.length === 0 ? (
+    <div className="h-full flex items-center justify-center">
+      <p className="text-gray-600 italic">{t("logs.empty")}</p>
+    </div>
+  ) : (
+    logs.map((log) => {
+      const timeStr = new Date(log.timestamp).toLocaleTimeString(
+        i18n.language === "fa" ? "fa-IR" : "en-US"
+      );
+      return (
+        <p key={log.id} className="border-b border-gray-800/60 pb-1 last:border-0 leading-5">
+          <span className="text-gray-500">[{timeStr}]</span>{" "}
+          {t(log.key, log.params)}
+        </p>
+      );
+    })
+  )}
+</div>
             </div>
           </div>
         </div>

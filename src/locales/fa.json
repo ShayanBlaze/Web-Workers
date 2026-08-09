@@ -86,6 +86,12 @@
     "percent": "درصد",
     "tasksPerSec": "تسک/ثانیه",
     "taskDetails": "جزئیات تسک‌ها",
+    "ganttChartTitle": "زمان‌بندی اجرای هسته‌ها",
+    "waveView": "نمای موجی (موبایل)",
+    "classicGantt": "گانت کلاسیک",
+    "taskLabel": "تسک #{{taskId}}",
+    "coreLabel": "Core {{coreId}}",
+    "clickWaveInstruction": "👆 روی هر یک از موج‌ها کلیک کنید تا جزئیات زمان‌بندی آن را ببینید.",
     "table": {
       "taskId": "Task ID",
       "priority": "Priority",
@@ -138,5 +144,24 @@
       ],
       "note": "توجه: در این شبیه‌ساز، Context Switch به‌صورت نرم‌افزاری و بدون هزینه زمانی شبیه‌سازی شده است. در یک سیستم‌عامل واقعی، هر سوییچ زمینه خود هزینه‌ی زمانی (Overhead) دارد که در این نسخه آموزشی برای سادگی نادیده گرفته شده است."
     }
+  },
+  "systemLogs": {
+    "taskCompleted": "تسک {{taskId}} روی Core {{coreId}} تکمیل شد. {{result}} عدد اول در {{executionTime}} ثانیه پیدا شد.",
+    "taskCancelled": "تسک {{taskId}} روی Core {{coreId}} لغو شد.",
+    "taskPreempted": "وقفه (Preemption): تسک {{taskId}} روی Core {{coreId}} برای تسک با اولویت بالاتر {{newTaskId}} متوقف شد.",
+    "taskReturnedToQueue": "تسک {{taskId}} روی Core {{coreId}} به دلیل وقفه (preempted) به صف بازگردانده شد.",
+    "taskQuantumExpired": "تسک {{taskId}} روی Core {{coreId}} به دلیل اتمام کوانتوم زمانی متوقف و به انتهای صف منتقل شد.",
+    "taskAddedToQueue": "تسک {{taskId}} به صف آماده اضافه شد (Priority: {{priority}}, Complexity: {{complexity}}x).",
+    "taskEntered": "تسک {{taskId}} وارد صف شد (Benchmark Mode).",
+    "taskDispatched": "زمان‌بند (Dispatcher) تسک {{taskId}} را به Core {{coreId}} اختصاص داد.",
+    "benchmarkStarted": "🚀 حالت Benchmark شروع شد.",
+    "benchmarkEnded": "🛑 حالت Benchmark خاتمه یافت."
+  },
+  "gantt": {
+    "title": "نمودار گانت اجرای تسک‌ها",
+    "core": "هسته {{id}}",
+    "time": "زمان (میلی‌ثانیه)",
+    "idle": "بیکار",
+    "task": "تسک {{id}}"
   }
 }
