@@ -163,5 +163,9 @@
     "time": "Time (ms)",
     "idle": "Idle",
     "task": "Task {{id}}"
+  },
+  "languageSwitch": {
+    "switching": "Switching Language...",
+    "pleaseWait": "Please wait"
   }
 }

@@ -160,6 +160,8 @@ export default function App() {
   const [showStatsPanel, setShowStatsPanel] = useState(false);
   const [benchTaskCount, setBenchTaskCount] = useState(8);
   const [benchComplexity, setBenchComplexity] = useState(3);
+  const [showLanguageOverlay, setShowLanguageOverlay] = useState(false);
+  const [overlayAnimatingOut, setOverlayAnimatingOut] = useState(false);
 
   // حالت تب‌های موبایل
   const [mobileTab, setMobileTab] = useState("monitor"); // 'monitor' | 'controls' | 'queue'
@@ -169,8 +171,25 @@ export default function App() {
   const isRoundRobin = algorithm === "ROUND_ROBIN";
 
   const toggleLanguage = () => {
-    const newLang = i18n.language === "fa" ? "en" : "fa";
-    i18n.changeLanguage(newLang);
+    setShowLanguageOverlay(true);
+    setOverlayAnimatingOut(false);
+    
+    // تاخیر کوتاه برای نمایش انیمیشن
+    setTimeout(() => {
+      const newLang = i18n.language === "fa" ? "en" : "fa";
+      i18n.changeLanguage(newLang);
+      
+      // شروع انیمیشن خروج
+      setTimeout(() => {
+        setOverlayAnimatingOut(true);
+        
+        // حذف overlay بعد از اتمام انیمیشن
+        setTimeout(() => {
+          setShowLanguageOverlay(false);
+          setOverlayAnimatingOut(false);
+        }, 300);
+      }, 400);
+    }, 300);
   };
 
   const benchmarkFinished = useMemo(() => {
@@ -201,6 +220,66 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-gray-100 pb-20 lg:pb-0">
+      {/* Language Switch Overlay */}
+      {showLanguageOverlay && (
+        <div 
+          className={`fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm ${
+            overlayAnimatingOut 
+              ? 'animate-[fadeOut_0.3s_ease-out]' 
+              : 'animate-[fadeIn_0.2s_ease-out]'
+          }`}
+        >
+          <div 
+            className={`bg-gradient-to-br from-gray-900 to-gray-950 border border-gray-700 rounded-3xl shadow-2xl p-10 flex flex-col items-center gap-5 max-w-sm mx-4 ${
+              overlayAnimatingOut 
+                ? 'animate-[scaleOut_0.3s_ease-out]' 
+                : 'animate-[scaleIn_0.3s_ease-out]'
+            }`}
+          >
+            {/* Animated Globe/Language Icon */}
+            <div className="relative w-20 h-20">
+              {/* Outer ring */}
+              <div className="absolute inset-0 border-4 border-blue-500/20 rounded-full"></div>
+              {/* Spinning ring */}
+              <div className="absolute inset-0 border-4 border-transparent border-t-blue-500 border-r-blue-400 rounded-full animate-spin"></div>
+              {/* Inner icon */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <svg 
+                  className="w-10 h-10 text-blue-400 animate-pulse" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" 
+                  />
+                </svg>
+              </div>
+            </div>
+            
+            {/* Text content */}
+            <div className="text-center space-y-2">
+              <p className="text-2xl font-bold text-white bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
+                {t("languageSwitch.switching")}
+              </p>
+              <p className="text-sm text-gray-400 font-medium">
+                {t("languageSwitch.pleaseWait")}
+              </p>
+            </div>
+
+            {/* Progress dots */}
+            <div className="flex gap-2">
+              <span className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+              <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+              <span className="w-2 h-2 bg-blue-300 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showInfoModal && (
         <InfoModal
           algorithm={algorithm}
