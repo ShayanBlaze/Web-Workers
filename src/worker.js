@@ -28,7 +28,7 @@ self.onmessage = function (e) {
       startTime: resumeState.originalStartTime,
       currentVal: resumeState.currentVal,
       originalStartTime: resumeState.originalStartTime,
-      accumulatedTime: resumeState.accumulatedTime || 0, 
+      accumulatedTime: resumeState.accumulatedTime || 0,
     };
   } else {
     const now = performance.now();

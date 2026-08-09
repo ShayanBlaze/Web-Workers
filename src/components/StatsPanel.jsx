@@ -1,11 +1,10 @@
 import {
   calculateTaskMetrics,
   calculateAverageMetrics,
-  formatTime,
 } from "../utils/metrics";
+import { formatTime } from "../utils/formatTime";
 
 export default function StatsPanel({ tasks, coreCount, onClose }) {
-
   const averages = calculateAverageMetrics(tasks, coreCount);
 
   return (
