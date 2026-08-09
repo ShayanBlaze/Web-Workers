@@ -1,5 +1,4 @@
 export const roundRobin = {
-
   schedule(queue, idleCoreCount) {
     const tasksToDispatch = queue.slice(0, idleCoreCount);
     return { tasksToDispatch };

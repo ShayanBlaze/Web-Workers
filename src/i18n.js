@@ -13,13 +13,12 @@ i18n
       en: { translation: enTranslation },
       fa: { translation: faTranslation },
     },
-    fallbackLng: 'en', // زبان پیش‌فرض
+    fallbackLng: 'en',
     interpolation: {
-      escapeValue: false, // React خودش جلوی XSS را می‌گیرد
+      escapeValue: false,
     },
   });
 
-// تغییر جهت صفحه (RTL/LTR) هنگام تغییر زبان
 i18n.on('languageChanged', (lng) => {
   const dir = lng === 'fa' ? 'rtl' : 'ltr';
   document.documentElement.dir = dir;

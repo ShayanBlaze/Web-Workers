@@ -1,4 +1,3 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 export default function Header() {
@@ -16,7 +15,6 @@ export default function Header() {
         <p className="text-sm text-gray-400">{t('subtitle')}</p>
       </div>
 
-      {/* دکمه سوییچ زبان */}
       <button
         onClick={toggleLanguage}
         className="px-3 py-1 bg-indigo-600 text-white rounded-md text-sm font-medium"

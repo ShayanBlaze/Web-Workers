@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   calculateTaskMetrics,
@@ -11,7 +11,6 @@ export default function StatsPanel({ tasks, coreCount, onClose }) {
   const { t } = useTranslation();
   const averages = calculateAverageMetrics(tasks, coreCount);
 
-  // استخراج داده‌های timeline برای الگوریتم‌های مختلف
   const timelineData = useMemo(() => {
     const slices = [];
     tasks.forEach((task) => {
@@ -39,7 +38,6 @@ export default function StatsPanel({ tasks, coreCount, onClose }) {
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-2 sm:p-4 animate-[fadeIn_0.15s_ease-out]">
       <div className="bg-gray-900 rounded-2xl shadow-2xl max-w-6xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col border border-gray-800">
-        {/* Header */}
         <div className="bg-gradient-to-r rtl:bg-gradient-to-l from-indigo-600 via-purple-600 to-pink-600 p-4 sm:p-6 shadow-md">
           <div className="flex items-center justify-between">
             <div>
@@ -76,7 +74,6 @@ export default function StatsPanel({ tasks, coreCount, onClose }) {
           </div>
         </div>
 
-        {/* Top Metrics Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-4 p-3 sm:p-6 bg-gray-800/40 border-b border-gray-800">
           <div className="bg-gray-800/80 p-3 sm:p-4 rounded-xl border border-gray-700/80 hover:border-indigo-500/50 transition-colors shadow-sm">
             <p className="text-[10px] sm:text-xs text-gray-400 mb-1 truncate">
@@ -131,12 +128,9 @@ export default function StatsPanel({ tasks, coreCount, onClose }) {
           </div>
         </div>
 
-        {/* Scrollable Main Section */}
         <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-6 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-700 [&::-webkit-scrollbar-thumb]:rounded-full">
-          {/* Gantt Chart Component */}
           <GanttChart timeline={timelineData} coreCount={coreCount} />
 
-          {/* Task Details Table */}
           <div className="bg-gray-800/50 p-4 sm:p-5 rounded-2xl border border-gray-700/70">
             <h3 className="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4 flex items-center gap-2">
               <span className="w-1.5 h-4 sm:h-5 bg-indigo-500 rounded-full"></span>
@@ -226,7 +220,6 @@ export default function StatsPanel({ tasks, coreCount, onClose }) {
           </div>
         </div>
 
-        {/* Footer */}
         <div className="p-4 sm:p-6 bg-gray-800/60 border-t border-gray-800 flex flex-col-reverse sm:flex-row gap-3 sm:gap-0 sm:justify-between items-center">
           <p className="text-[10px] sm:text-xs text-gray-400 text-center sm:text-start">
             {t("stats.note", "نکته: پارامترهای زمان‌بندی بر اساس واحدهای میلی‌ثانیه‌ای ثبت شده‌اند.")}

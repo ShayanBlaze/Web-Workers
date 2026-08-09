@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -22,7 +22,6 @@ ChartJS.register(
   ChartDataLabels
 );
 
-// پالت رنگ‌های مدرن و با کنتراست بالا
 const TASK_PALETTE = [
   { bg: "#6366f1", border: "#818cf8", text: "text-indigo-400", badgeBg: "bg-indigo-500/10 border-indigo-500/30" },
   { bg: "#a855f7", border: "#c084fc", text: "text-purple-400", badgeBg: "bg-purple-500/10 border-purple-500/30" },
@@ -37,7 +36,6 @@ const TASK_PALETTE = [
 export default function GanttChart({ timeline = [], coreCount = 1 }) {
   const { t } = useTranslation();
   
-  // حالت نمایش: 'wave' (نمای موجی مخصوص موبایل) یا 'classic' (گانت چارت استاندارد)
   const [viewMode, setViewMode] = useState("wave");
   const [selectedSlice, setSelectedSlice] = useState(null);
 
@@ -46,13 +44,11 @@ export default function GanttChart({ timeline = [], coreCount = 1 }) {
     [timeline]
   );
 
-  // محاسبه حداکثر زمان برای نرمال‌سازی محور زمان
   const maxTime = useMemo(() => {
     if (!timeline.length) return 100;
     return Math.max(...timeline.map((t) => t.endTime), 1);
   }, [timeline]);
 
-  // محاسبه خلاصه اطلاعات تسک‌ها برای راهنمای رنگ‌ها
   const taskSummaries = useMemo(() => {
     return uniqueTaskIds.map((taskId) => {
       const index = uniqueTaskIds.indexOf(taskId);
@@ -72,9 +68,6 @@ export default function GanttChart({ timeline = [], coreCount = 1 }) {
     });
   }, [uniqueTaskIds, timeline]);
 
-  // -------------------------------------------------------------
-  // ۱. داده‌ها و تنظیمات گانت چارت کلاسیک (برای Desktop یا سوییچ)
-  // -------------------------------------------------------------
   const yLabels = useMemo(
     () => Array.from({ length: coreCount }, (_, i) => `Core ${i}`),
     [coreCount]
@@ -153,29 +146,23 @@ export default function GanttChart({ timeline = [], coreCount = 1 }) {
     },
   };
 
-  // -------------------------------------------------------------
-  // ۲. محاسبه مختصات SVG برای نمای موجی (Mobile Wave View)
-  // -------------------------------------------------------------
   const svgWidth = 1000;
   const svgHeight = 120;
-  const baselineY = 95; // خط پایه افقی
+  const baselineY = 95;
 
   const waveSlices = useMemo(() => {
     return timeline.map((slice, idx) => {
       const taskIdx = uniqueTaskIds.indexOf(slice.taskId);
       const colorObj = TASK_PALETTE[taskIdx % TASK_PALETTE.length];
 
-      // محاسبه موقعیت X بر اساس درصد زمان
       const x1 = (slice.startTime / maxTime) * (svgWidth - 40) + 20;
       const x2 = (slice.endTime / maxTime) * (svgWidth - 40) + 20;
-      const width = Math.max(x2 - x1, 12); // حداقل عرض برای قابل لمس بودن
+      const width = Math.max(x2 - x1, 12);
 
-      // ارتفاع موج بر اساس هسته جهت تفکیک دیداری هم‌پوشانی‌ها
       const waveHeight = Math.min(50, 25 + (slice.coreId % 3) * 10);
       const peakY = baselineY - waveHeight;
       const midX = x1 + width / 2;
 
-      // منحنی Bezier برای ایجاد شکل موج نرم
       const pathD = `M ${x1} ${baselineY} Q ${midX} ${peakY} ${x2} ${baselineY} Z`;
 
       return {
@@ -194,7 +181,6 @@ export default function GanttChart({ timeline = [], coreCount = 1 }) {
 
   return (
     <div className="bg-gray-800/90 backdrop-blur-md p-3 sm:p-5 rounded-2xl border border-gray-700/70 shadow-xl w-full">
-      {/* Header & View Mode Switcher */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 border-b border-gray-700/60 pb-3">
         <div className="flex items-center gap-2">
           <span className="w-2 h-4 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-full"></span>
@@ -203,7 +189,6 @@ export default function GanttChart({ timeline = [], coreCount = 1 }) {
           </h3>
         </div>
 
-        {/* دکمه‌های سوئیچ حالت نمایش */}
         <div className="flex items-center bg-gray-900/80 p-1 rounded-xl border border-gray-700/60 self-start sm:self-auto">
           <button
             onClick={() => setViewMode("wave")}
@@ -230,7 +215,6 @@ export default function GanttChart({ timeline = [], coreCount = 1 }) {
         </div>
       </div>
 
-      {/* Task Legends Chips */}
       {taskSummaries.length > 0 && (
         <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3.5 max-h-24 overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-gray-700">
           {taskSummaries.map((item) => (
@@ -253,19 +237,14 @@ export default function GanttChart({ timeline = [], coreCount = 1 }) {
         </div>
       )}
 
-      {/* ------------------------------------------------------------- */}
-      {/* 🌊 MODE 1: MOBILE WAVE TIMELINE (نمای موجی روی خط یکپارچه)     */}
-      {/* ------------------------------------------------------------- */}
       {viewMode === "wave" ? (
         <div className="w-full bg-gray-900/60 rounded-xl p-3 border border-gray-800">
-          {/* SVG Canvas برای رسم خط افقی و موج‌ها */}
           <div className="w-full overflow-x-auto pb-1 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-thumb]:bg-gray-700">
             <svg
               viewBox={`0 0 ${svgWidth} ${svgHeight}`}
               className="w-full min-w-[500px] h-32 select-none overflow-visible"
             >
               <defs>
-                {/* تعریف Gradient برای درخشش زیر خط baseline */}
                 <linearGradient id="lineGlow" x1="0" y1="0" x2="1" y2="0">
                   <stop offset="0%" stopColor="#6366f1" stopOpacity="0.8" />
                   <stop offset="50%" stopColor="#a855f7" stopOpacity="0.8" />
@@ -273,7 +252,6 @@ export default function GanttChart({ timeline = [], coreCount = 1 }) {
                 </linearGradient>
               </defs>
 
-              {/* خط اصلی تایم‌لاین (Base Timeline Rail) */}
               <line
                 x1="15"
                 y1={baselineY}
@@ -284,7 +262,6 @@ export default function GanttChart({ timeline = [], coreCount = 1 }) {
                 strokeLinecap="round"
               />
 
-              {/* درجه‌بندی‌های زمانی روی خط (Ticks) */}
               {[0, 0.25, 0.5, 0.75, 1].map((pct, i) => {
                 const tickX = 20 + pct * (svgWidth - 40);
                 const timeVal = Math.round(pct * maxTime);
@@ -312,7 +289,6 @@ export default function GanttChart({ timeline = [], coreCount = 1 }) {
                 );
               })}
 
-              {/* رندر کردن موج‌های تسک‌ها */}
               {waveSlices.map((slice) => {
                 const isSelected = selectedSlice?.id === slice.id;
                 return (
@@ -321,7 +297,6 @@ export default function GanttChart({ timeline = [], coreCount = 1 }) {
                     onClick={() => setSelectedSlice(slice)}
                     className="cursor-pointer transition-all duration-200 group"
                   >
-                    {/* منحنی اصلی موج */}
                     <path
                       d={slice.pathD}
                       fill={slice.colorObj.bg}
@@ -331,7 +306,6 @@ export default function GanttChart({ timeline = [], coreCount = 1 }) {
                       className="hover:fill-opacity-80 transition-all"
                     />
 
-                    {/* برچسب شناسه تسک روی قله موج */}
                     {slice.width > 25 && (
                       <text
                         x={slice.midX}
@@ -346,7 +320,6 @@ export default function GanttChart({ timeline = [], coreCount = 1 }) {
                       </text>
                     )}
 
-                    {/* نشانگر هسته (Core Badge Dot) */}
                     <circle
                       cx={slice.midX}
                       cy={baselineY}
@@ -361,7 +334,6 @@ export default function GanttChart({ timeline = [], coreCount = 1 }) {
             </svg>
           </div>
 
-          {/* کارت جزئیات بازه انتخاب شده (Smart Detail Pill) */}
           <div className="mt-2 pt-2 border-t border-gray-800 flex items-center justify-between text-xs text-gray-300 min-h-[32px]">
             {selectedSlice ? (
               <div className="flex items-center gap-2 w-full justify-between animate-[fadeIn_0.15s_ease-out]">
@@ -391,9 +363,6 @@ export default function GanttChart({ timeline = [], coreCount = 1 }) {
           </div>
         </div>
       ) : (
-        /* ------------------------------------------------------------- */
-        /* 📊 MODE 2: CLASSIC GANTT CHART (نمای چارت میله‌ای کلاسیک)      */
-        /* ------------------------------------------------------------- */
         <div className="w-full overflow-x-auto rounded-xl bg-gray-900/40 p-2 border border-gray-800 [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:bg-gray-700">
           <div
             style={{ height: `${dynamicChartHeight}px` }}
